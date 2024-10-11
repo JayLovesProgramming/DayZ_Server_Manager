@@ -18,7 +18,10 @@ monitoring_process = None
 server_process = None
 stop_monitor_process = False 
 previously_highlighted = None
+discord_killfeed_process = None
+log_steam_ids_process = None
 
+processes = []
 Window = ttk.Window()
 
 # Destroys the windows and displays a message box with the error message
@@ -28,7 +31,7 @@ def show_error_message(title: str, message: str):
 
 # Try and load the config.json
 try:
-    with open('Utils\\config.json', 'r') as config_file:
+    with open('Utils/config.json', 'r') as config_file:
         config = json.load(config_file)
 except FileNotFoundError:
     show_error_message("File Not Found", "Configuration file not found. Please check the file path.")
@@ -92,12 +95,22 @@ def run_genmods():
     process.wait()
 
 def run_discord_killfeed():
-    cmd = "start cmd /k python " + monitordeaths_dir  # Using 'start' to create a new window
-    subprocess.Popen(cmd, cwd=server_dir, shell=True)
+    cmd = "start cmd /k python " + monitordeaths_dir
+    discord_killfeed_process = subprocess.Popen(cmd, cwd=server_dir, shell=True)
+    processes.append(discord_killfeed_process)  # Store the process
+    # discord_killfeed_process.wait()  # Wait is usually not required here
 
 def run_log_steam_ids():
-    cmd = "start cmd /k python " + steam_ids_script_dir  # Using 'start' to create a new window
-    subprocess.Popen(cmd, cwd=server_dir, shell=True)
+    cmd = "start cmd /k python " + steam_ids_script_dir
+    log_steam_ids_process = subprocess.Popen(cmd, cwd=server_dir, shell=True)
+    processes.append(log_steam_ids_process)  # Store the process
+    # log_steam_ids_process.wait()  # Wait is usually not required here
+
+def close_all_processes():
+    for proc in processes:
+        if proc.poll() is None:  # Check if the process is still running
+            proc.terminate()  # Gracefully terminate the process
+            proc.wait()  # Wait for the process to terminate
 
 # Query response checker
 def receivedInvalidQuery(response_text):
@@ -176,10 +189,12 @@ def start_server():
 # Stop Server
 def stop_server():
     global server_process
+    close_all_processes()
     if server_process:
         server_process.terminate()
         server_process.wait()
         server_process = None
+ 
 
 # Start Server Button
 def start_server_gui():
@@ -208,13 +223,13 @@ def toggle_auto_start():
         should_auto_start_button.config(text="Auto Start: Disabled")
     try:
         # Read the existing config.json file
-        with open('Utils/config.json', 'r') as file:
+        with open(f'{prefix_directory}config.json', 'r') as file:
             config = json.load(file)
     except FileNotFoundError:
         # If the file doesn't exist, start with an empty config
         return DayZPrint("Error", "Check your config.json for any errors")
     config['auto_start'] = auto_start
-    with open('Utils/config.json', 'w') as file:
+    with open(f'{prefix_directory}config.json', 'w') as file:
         json.dump(config, file, indent=4)
 
 # Stop Server Button
@@ -258,25 +273,18 @@ def create_init_log_message(log_text):
 # Open text editor function
 def open_text_editor(file_name):
     file_path = os.path.join(prefix_directory, file_name)  # Define the path to the file
-    # Create a new window for the text editor
     editor_window = tk.Toplevel(Window)
     editor_window.title(f"Edit {file_name}")
-    # Create a frame to hold the text area and the scrollbar
     frame = tk.Frame(editor_window)
     frame.pack(expand=True, fill='both')
-    # Create a text area for editing
     text_area = tk.Text(frame, wrap='word', font=custom_font)
     text_area.pack(side=tk.LEFT, expand=True, fill='both')
-    # Create a scrollbar
     scrollbar = tk.Scrollbar(frame, command=text_area.yview)
     scrollbar.pack(side=tk.RIGHT, fill='y')
-    # Configure the text area to use the scrollbar
     text_area.config(yscrollcommand=scrollbar.set)
-    # Load the contents of the file into the text area
     if os.path.exists(file_path):
         with open(file_path, 'r') as file:
             text_area.insert(tk.END, file.read())
-    # Create a save button to save changes
     def save_changes():
         with open(file_path, 'w') as file:
             file.write(text_area.get(1.0, tk.END))  # Write the text area content to the file
@@ -286,29 +294,19 @@ def open_text_editor(file_name):
     save_button.pack(pady=10)
     cancel_button = tk.Button(editor_window, text="Cancel", command=editor_window.destroy)
     cancel_button.pack(pady=5)
-    # Stack to keep track of deleted lines and their indices
     deleted_lines_stack = []
-    # Function to delete the selected line
     def delete_selected_line(event):
-        # Get the current cursor position
         current_line_index = text_area.index("insert").split('.')[0]
-        # Get the content of the current line
         current_line = text_area.get(f"{current_line_index}.0", f"{current_line_index}.end")
         if current_line:  # Check if the line is not empty
-            # Save the deleted line and its index for potential undo
             deleted_lines_stack.append((current_line, current_line_index))
-            # Remove the line from the text area
             text_area.delete(f"{current_line_index}.0", f"{current_line_index}.end + 1 char")  # +1 char to remove the newline
-    # Function to restore the last deleted line
     def restore_deleted_line():
         if deleted_lines_stack:
-            # Pop the last deleted line and its index
             deleted_line, line_index = deleted_lines_stack.pop()
-            # Reinsert the deleted line back into the text area
             text_area.insert(f"{line_index}.0", deleted_line + '\n')  # Add the deleted line back
     text_area.bind('<Control-x>', delete_selected_line)
     text_area.bind('<Control-z>', lambda event: restore_deleted_line())
-
 
 Window.title(f"DayZ Server Manager: {server_name}")
 Window.geometry("900x600")
