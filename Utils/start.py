@@ -56,6 +56,8 @@ if 'config' in locals():
     cpu_cores = config["cpu_cores"]
     retry_limit = config["retry_limit"]
     auto_start = config["auto_start"]
+    log_steam_ids_active = config.get("log_steam_ids_active", False)  # New configuration
+    killfeed_script_active = config.get("killfeed_script_active", False)  # New configuration
     dzsa_query_endpoint = f"http://dayzsalauncher.com/api/v1/query/{server_endpoint}/{dzsa_query_port}"
     dzsa_query_response = ""
     mod_list = []
@@ -351,11 +353,10 @@ Window.protocol("WM_DELETE_WINDOW", on_closing)
 # The window icon
 Window.iconbitmap(r'Utils\small.ico')
 
-# Run the discord killfeed script
-run_discord_killfeed()
-
-# Run the log steam ids script
-run_log_steam_ids()
+if killfeed_script_active:
+    run_discord_killfeed()
+if log_steam_ids_active:
+    run_log_steam_ids()
 
 # The windows main loop (to draw it?)
 Window.mainloop()
