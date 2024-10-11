@@ -30,6 +30,6 @@ If you want the server to automatically start when you hit start.bat then you ha
 
 
 
-With the update it now opens two other command prompt windows
+With the update, you now have a option for it to open two other command prompt windows
 
 One is for the discord killfeed script and one is for the logging steam ids script which is used in the discord killfeed script
