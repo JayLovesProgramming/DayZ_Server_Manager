@@ -11,5 +11,20 @@
     "monitordeaths_dir": "Utils/monitordeaths.py",
     "cpu_cores": 2,
     "retry_limit": 10,
-    "auto_start": false
+    "auto_start": true,
+
+    "mods_dir": "C:/DayZServer/resources",
+    "output_mods_txt_file_dir": "Utils/mods.txt",
+    "ignore_txt_file_dir": "Utils/ignore.txt",
+    "priority_mods": [
+      "@CF",
+      "@Dabs Framework",
+      "@VPPAdminTools",
+      "@DayZ-Expansion-Bundle",
+      "@DayZ-Expansion-Licensed",
+      "@DayZ-Expansion-Animations",
+      "@DayZ Editor Loader",
+      "@MuchFramework",
+      "@MuchStuffPack"
+    ]
 }
