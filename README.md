@@ -10,13 +10,18 @@ Doing this will make the setup process of this python script MUCH easier
 
 A 100% SUCCESS RATE SET-UP GUIDE
 
-# Step 1: 
-Place all of these scripts inside of resources/Utils APART from the start.bat. The start.bat needs be in the main directory (eg.C:\DayZServer\resources)
+# Step 1:
 
-# Step 2: 
+Place all of these scripts inside of resources/Utils APART from the start.bat
+**The start.bat needs be in the main directory**
+(eg.C:\DayZServer\resources)
+
+# Step 2:
+
 Setup config.json for your servers liking (eg. server ip, server name etc)
 
-# Step 3: 
+# Step 3:
+
 Run the start.bat
 
 When you run the start.bat it should open the python script which then opens this window. The rest is pretty self explantory.
