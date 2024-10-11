@@ -16,7 +16,6 @@ import re
 invalid_workshop_mod_id = r'{"status":1,"error":"steam workshop id not found - (\d+)"}'
 monitoring_process = None
 server_process = None
-monitordeaths_process = None
 stop_monitor_process = False 
 previously_highlighted = None
 
@@ -50,6 +49,7 @@ if 'config' in locals():
     genmods_py_dir = config["genmods_py_dir"]
     mods_txt_dir = config["mods_txt_dir"]
     monitordeaths_dir = config["monitordeaths_dir"]
+    steam_ids_script_dir = config["steam_ids_script_dir"]
     cpu_cores = config["cpu_cores"]
     retry_limit = config["retry_limit"]
     auto_start = config["auto_start"]
@@ -60,8 +60,8 @@ if 'config' in locals():
 # Initialization
 def init():
     os.chdir(server_dir)
-    read_mods()
     run_genmods()
+    read_mods()
 
 # The log function for the text box so we can actually see the logs in real time
 def DayZPrint(type, param):
@@ -91,6 +91,14 @@ def run_genmods():
     process = subprocess.Popen(["pythonw", genmods_py_dir], cwd=server_dir)
     process.wait()
 
+def run_discord_killfeed():
+    cmd = "start cmd /k python " + monitordeaths_dir  # Using 'start' to create a new window
+    subprocess.Popen(cmd, cwd=server_dir, shell=True)
+
+def run_log_steam_ids():
+    cmd = "start cmd /k python " + steam_ids_script_dir  # Using 'start' to create a new window
+    subprocess.Popen(cmd, cwd=server_dir, shell=True)
+
 # Query response checker
 def receivedInvalidQuery(response_text):
     invalid_workshop = re.search(invalid_workshop_mod_id, response_text)
@@ -118,7 +126,7 @@ def query_server():
                 retries += 1
                 time.sleep(30)  # Wait before retrying
                 continue
-            DayZPrint("Info", "Query Successful")
+            DayZPrint("Info", "DZSA Launcher Update Successful")
             return response_text  # Successful response
         except requests.RequestException as value:
             DayZPrint("Error", f"Querying the server: {value}")
@@ -146,7 +154,6 @@ def monitor_server():
 
 # Start Server
 def start_server():
-    global monitordeaths_process
     mod_string = ";".join(mod_list)
     read_mods()
     command = [
@@ -168,15 +175,11 @@ def start_server():
 
 # Stop Server
 def stop_server():
-    global server_process, monitordeaths_process
+    global server_process
     if server_process:
         server_process.terminate()
         server_process.wait()
         server_process = None
-    if monitordeaths_process:
-        DayZPrint("Success", "Stopping monitordeaths.py")
-        monitordeaths_process.terminate()
-        monitordeaths_process = None
 
 # Start Server Button
 def start_server_gui():
@@ -235,13 +238,12 @@ def generate_mods_gui():
 # Make sure that they want to quit the application so we don't accidentally close the entire server
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit? This will stop the server if it's running."):
-        stop_monitor_process = True
         stop_server()
         Window.destroy()
 
 # Restart server button
 def restart_server():
-    global server_process, monitordeaths_process
+    global server_process
     DayZPrint("Info", "Restarting server...")
     stop_server()  # Stop the server
     time.sleep(2)  # Optional delay before starting again
@@ -250,7 +252,7 @@ def restart_server():
 
 def create_init_log_message(log_text):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_text.insert(tk.END, f"[{current_time}] ", "default")
+    log_text.insert(tk.END, f"[{current_time}]: ", "default")
     log_text.insert(tk.END, "DayZ Server Manager Initialized\n")
 
 # Open text editor function
@@ -309,7 +311,6 @@ def open_text_editor(file_name):
 
 
 Window.title(f"DayZ Server Manager: {server_name}")
-Window.iconbitmap(r'Utils\small.ico')  # Ensure 'small.ico' is in the same directory as the script
 Window.geometry("900x600")
 Window.resizable(False, True)
 custom_font = tkFont.Font(family="Tahoma", size=10)  # Change "Helvetica" and 12 to your desired font family and size
@@ -340,7 +341,7 @@ edit_config_button.grid(row=1, column=1, padx=5, pady=5)  # Place in row 0, colu
 should_auto_start_button = tk.Button(Window, text="Auto Start: Enabled" if auto_start else "Auto Start: Disabled", command=toggle_auto_start, width=18, height=2)
 should_auto_start_button.grid(row=1, column=2, padx=5, pady=5)
 # Log text box
-log_text = scrolledtext.ScrolledText(Window, width=150, height=200, state='normal', font=custom_font)
+log_text = scrolledtext.ScrolledText(Window, width=120, height=200, state='normal', font=custom_font)
 log_text.grid(row=2, column=0, columnspan=5, pady=10)  # Log text spans all columns
 
 # Create the initial log message in the window
@@ -351,6 +352,12 @@ Window.protocol("WM_DELETE_WINDOW", on_closing)
 
 # The window icon
 Window.iconbitmap(r'Utils\small.ico')
+
+# Run the discord killfeed script
+run_discord_killfeed()
+
+# Run the log steam ids script
+run_log_steam_ids()
 
 # The windows main loop (to draw it?)
 Window.mainloop()

@@ -1,0 +1,21 @@
+{
+    "steam_ids": {
+        "23113231312": {
+            "player_name": "Survivor",
+            "comment": ""
+        }
+    },
+    "duplicateSteamIDs": {
+        "32133332333123": [
+            "Survivor",
+            "Survivor (2)",
+            "aaaa",
+            "aaaa (2)",
+            "Jay"
+        ],
+        "332313313231231": [
+            "ImUr_HuckleBerry",
+            "ImUrHuckleBerry"
+        ]
+    }
+}
