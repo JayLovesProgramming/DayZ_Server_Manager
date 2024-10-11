@@ -18,7 +18,7 @@ Place all of these scripts inside of resources/Utils APART from the start.bat
 
 # Step 2:
 
-Setup config.json for your servers liking (eg. server ip, server name etc)
+Setup config.json for your servers liking (eg. server ip, server name, discord webhook etc)
 
 # Step 3:
 
@@ -27,3 +27,9 @@ Run the start.bat
 When you run the start.bat it should open the python script which then opens this window. The rest is pretty self explantory.
 If you want the server to automatically start when you hit start.bat then you have that option to enable or disable
 ![image](https://github.com/user-attachments/assets/354d2b87-79cd-48e7-8091-e174cc6d28cd)
+
+
+
+With the update it now opens two other command prompt windows
+
+One is for the discord killfeed script and one is for the logging steam ids script which is used in the discord killfeed script
