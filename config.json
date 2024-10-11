@@ -1,0 +1,15 @@
+{
+    "server_name": "Hold My Beer DayZ - 3PP | PVP | 3x | Keycards | BBP | BaseSpawns | Drugs | 100k Start",
+    "server_endpoint": "",
+    "server_port": 2302,
+    "dzsa_query_port": 27016,
+    "prefix_directory": "Utils/",
+    "server_dir": "../resources",
+    "server_config_dir": "serverDZ.cfg",
+    "genmods_py_dir": "Utils/genmods.py",
+    "mods_txt_dir": "Utils/mods.txt",
+    "monitordeaths_dir": "Utils/monitordeaths.py",
+    "cpu_cores": 2,
+    "retry_limit": 10,
+    "auto_start": false
+}
