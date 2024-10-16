@@ -4,7 +4,7 @@
 
 All of these scripts are needed for full functionality!
 
-I recommend placing all these script in their own folder named "Utils"
+I recommend placing all these scripts in their own folder named "Utils"
 For example: C:\DayZServer\resources\Utils
 Doing this will make the setup process of this python script MUCH easier
 
@@ -24,7 +24,7 @@ Setup config.json for your servers liking (eg. server ip, server name, discord w
 
 Run the start.bat
 
-When you run the start.bat it should open the python script which then opens this window. The rest is pretty self explantory.
+When you run the start.bat it should open the python scripts which then opens this window. The rest is pretty self explantory.
 If you want the server to automatically start when you hit start.bat then you have that option to enable or disable
 ![image](https://github.com/user-attachments/assets/354d2b87-79cd-48e7-8091-e174cc6d28cd)
 
